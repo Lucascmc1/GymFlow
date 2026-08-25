@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Nova avaliação', 'assessments', ~{::main})}">
+<main class="form-shell">
+    <header class="form-header">
+        <a th:href="@{/assessments}" class="back-link"><svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>Voltar para avaliações</a>
+        <span class="eyebrow">Nova medição</span><h1>Avaliação física</h1><p>Registre os principais indicadores para comparar a evolução ao longo do tempo.</p>
+    </header>
+    <form class="card form-card" th:action="@{/assessments}" method="post" th:object="${assessmentForm}">
+        <section class="form-section">
+            <div class="form-section-title"><h2>Identificação</h2><p>Aluno e data da coleta.</p></div>
+            <div class="form-grid">
+                <div class="field"><label for="memberId" class="required">Aluno</label><select id="memberId" th:field="*{memberId}"><option value="">Selecione</option><option th:each="member : ${members}" th:value="${member.id}" th:text="|${member.name} · ${member.cpf}|">Marina</option></select><span class="field-error" th:errors="*{memberId}">Selecione o aluno</span></div>
+                <div class="field"><label for="assessmentDate" class="required">Data</label><input id="assessmentDate" type="date" th:field="*{assessmentDate}"><span class="field-error" th:errors="*{assessmentDate}">Informe a data</span></div>
+            </div>
+        </section>
+        <section class="form-section">
+            <div class="form-section-title"><h2>Composição corporal</h2><p>Use quilogramas, metros e percentuais.</p></div>
+            <div class="form-grid">
+                <div class="field"><label for="weight" class="required">Peso (kg)</label><input id="weight" type="number" step="0.01" th:field="*{weight}" placeholder="72,50"><span class="field-error" th:errors="*{weight}">Peso inválido</span></div>
+                <div class="field"><label for="height" class="required">Altura (m)</label><input id="height" type="number" step="0.01" th:field="*{height}" placeholder="1,75"><span class="field-error" th:errors="*{height}">Altura inválida</span></div>
+                <div class="field"><label for="bodyFatPercentage">Gordura corporal (%)</label><input id="bodyFatPercentage" type="number" step="0.01" th:field="*{bodyFatPercentage}"></div>
+                <div class="field"><label for="muscleMass">Massa muscular (kg)</label><input id="muscleMass" type="number" step="0.01" th:field="*{muscleMass}"></div>
+            </div>
+        </section>
+        <section class="form-section">
+            <div class="form-section-title"><h2>Perímetros</h2><p>Medidas em centímetros.</p></div>
+            <div class="form-grid">
+                <div class="field"><label for="waist">Cintura</label><input id="waist" type="number" step="0.01" th:field="*{waist}"></div>
+                <div class="field"><label for="chest">Peitoral</label><input id="chest" type="number" step="0.01" th:field="*{chest}"></div>
+                <div class="field"><label for="arm">Braço</label><input id="arm" type="number" step="0.01" th:field="*{arm}"></div>
+                <div class="field"><label for="thigh">Coxa</label><input id="thigh" type="number" step="0.01" th:field="*{thigh}"></div>
+                <div class="field field-wide"><label for="notes">Observações</label><textarea id="notes" th:field="*{notes}" placeholder="Condições da coleta ou observações do profissional"></textarea></div>
+            </div>
+        </section>
+        <footer class="form-actions"><a th:href="@{/assessments}" class="button button-secondary">Cancelar</a><button type="submit" class="button button-primary">Salvar avaliação</button></footer>
+    </form>
+</main>
+</html>

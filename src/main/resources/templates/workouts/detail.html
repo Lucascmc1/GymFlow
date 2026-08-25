@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(${workout.title}, 'workouts', ~{::main})}">
+<main>
+    <a th:href="@{/workouts}" class="back-link"><svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>Voltar para treinos</a>
+    <header class="page-header">
+        <div>
+            <span class="eyebrow" th:text="|Ficha de ${workout.member.name}|">Ficha de Marina Alves</span>
+            <h1 th:text="${workout.title}">Treino A · Força</h1>
+            <p th:text="|${workout.goal} · Responsável: ${workout.coach}|">Ganho de força · Carlos</p>
+        </div>
+        <div class="page-actions">
+            <button type="button" class="button button-primary" data-modal-open="exerciseModal">
+                <svg th:replace="~{fragments/icons :: icon('plus')}"></svg>Adicionar exercício
+            </button>
+        </div>
+    </header>
+
+    <section class="card">
+        <header class="card-header"><div><h2>Sequência de exercícios</h2><p th:text="|${workout.exercises.size()} exercício(s) na ficha|">4 exercícios</p></div></header>
+        <div class="exercise-list" th:if="${!workout.exercises.empty}">
+            <div class="exercise-row header"><span>#</span><span>Exercício</span><span>Grupo</span><span>Séries</span><span>Reps.</span><span>Descanso</span><span></span></div>
+            <div class="exercise-row" th:each="exercise : ${workout.exercises}">
+                <span class="exercise-number" th:text="${exercise.position}">1</span>
+                <span><strong style="display:block;color:var(--ink)" th:text="${exercise.name}">Agachamento livre</strong><small style="color:var(--ink-muted)" th:text="${exercise.notes ?: 'Sem observações'}">Execução estável</small></span>
+                <span th:text="${exercise.muscleGroup}">Quadríceps</span>
+                <strong th:text="${exercise.sets}">4</strong>
+                <strong th:text="${exercise.repetitions}">8-10</strong>
+                <span th:text="|${exercise.restSeconds}s|">90s</span>
+                <form th:action="@{/workouts/exercises/{id}/delete(id=${exercise.id})}" method="post" data-confirm="Remover este exercício da ficha?">
+                    <button type="submit" class="button button-danger button-sm" aria-label="Remover"><svg th:replace="~{fragments/icons :: icon('trash')}"></svg></button>
+                </form>
+            </div>
+        </div>
+        <div class="empty-state" th:if="${workout.exercises.empty}"><p><strong>A ficha está vazia</strong>Adicione o primeiro exercício para montar a sequência.</p></div>
+    </section>
+
+    <div class="modal" id="exerciseModal" role="dialog" aria-modal="true" aria-labelledby="exerciseModalTitle">
+        <div class="modal-card" style="width:min(620px,100%)">
+            <span class="eyebrow">Montagem da ficha</span>
+            <h2 id="exerciseModalTitle">Adicionar exercício</h2>
+            <p>Informe volume, repetições e descanso previstos.</p>
+            <form th:action="@{/workouts/{id}/exercises(id=${workout.id})}" method="post" th:object="${exerciseForm}">
+                <div class="form-grid">
+                    <div class="field"><label for="name" class="required">Exercício</label><input id="name" th:field="*{name}" placeholder="Ex.: Supino reto"><span class="field-error" th:errors="*{name}">Informe o exercício</span></div>
+                    <div class="field"><label for="muscleGroup" class="required">Grupo muscular</label><input id="muscleGroup" th:field="*{muscleGroup}" placeholder="Ex.: Peitoral"><span class="field-error" th:errors="*{muscleGroup}">Informe o grupo</span></div>
+                    <div class="field"><label for="sets" class="required">Séries</label><input id="sets" type="number" min="1" max="20" th:field="*{sets}"></div>
+                    <div class="field"><label for="repetitions" class="required">Repetições</label><input id="repetitions" th:field="*{repetitions}" placeholder="Ex.: 10-12"></div>
+                    <div class="field"><label for="restSeconds" class="required">Descanso (seg.)</label><input id="restSeconds" type="number" min="0" max="600" th:field="*{restSeconds}"></div>
+                    <div class="field"><label for="notes">Orientação</label><input id="notes" th:field="*{notes}" placeholder="Observação opcional"></div>
+                </div>
+                <div class="modal-actions"><button type="button" class="button button-secondary" data-modal-close>Cancelar</button><button type="submit" class="button button-primary">Adicionar à ficha</button></div>
+            </form>
+        </div>
+    </div>
+</main>
+</html>

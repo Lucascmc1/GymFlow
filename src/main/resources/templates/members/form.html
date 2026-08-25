@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(${formTitle}, 'members', ~{::main})}">
+<main class="form-shell">
+    <header class="form-header">
+        <a th:href="@{/members}" class="back-link">
+            <svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>
+            Voltar para alunos
+        </a>
+        <span class="eyebrow">Cadastro</span>
+        <h1 th:text="${formTitle}">Novo aluno</h1>
+        <p>Preencha os dados que a equipe usará no atendimento e acompanhamento do aluno.</p>
+    </header>
+
+    <form class="card form-card" method="post" th:object="${memberForm}"
+          th:action="${memberId == null} ? @{/members} : @{/members/{id}(id=${memberId})}">
+        <div class="form-errors" th:if="${#fields.hasGlobalErrors()}"
+             th:each="error : ${#fields.globalErrors()}" th:text="${error}">
+            Revise os dados informados.
+        </div>
+
+        <section class="form-section">
+            <div class="form-section-title">
+                <h2>Informações pessoais</h2>
+                <p>Dados de identificação do aluno.</p>
+            </div>
+            <div class="form-grid">
+                <div class="field field-wide">
+                    <label for="name" class="required">Nome completo</label>
+                    <input id="name" type="text" th:field="*{name}" placeholder="Ex.: Marina Alves"
+                           th:classappend="${#fields.hasErrors('name')} ? ' input-error' : ''">
+                    <span class="field-error" th:errors="*{name}">Informe o nome</span>
+                </div>
+                <div class="field">
+                    <label for="cpf" class="required">CPF</label>
+                    <input id="cpf" type="text" th:field="*{cpf}" data-mask="cpf"
+                           inputmode="numeric" placeholder="000.000.000-00"
+                           th:classappend="${#fields.hasErrors('cpf')} ? ' input-error' : ''">
+                    <span class="field-error" th:errors="*{cpf}">Informe o CPF</span>
+                </div>
+                <div class="field">
+                    <label for="birthDate" class="required">Data de nascimento</label>
+                    <input id="birthDate" type="date" th:field="*{birthDate}"
+                           th:classappend="${#fields.hasErrors('birthDate')} ? ' input-error' : ''">
+                    <span class="field-error" th:errors="*{birthDate}">Informe a data</span>
+                </div>
+                <div class="field">
+                    <label for="gender">Gênero</label>
+                    <select id="gender" th:field="*{gender}">
+                        <option value="">Prefere não informar</option>
+                        <option value="Feminino">Feminino</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Não binário">Não binário</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="joinDate" class="required">Data de cadastro</label>
+                    <input id="joinDate" type="date" th:field="*{joinDate}"
+                           th:classappend="${#fields.hasErrors('joinDate')} ? ' input-error' : ''">
+                    <span class="field-error" th:errors="*{joinDate}">Informe a data</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <div class="form-section-title">
+                <h2>Contato e atendimento</h2>
+                <p>Canais usados para avisos, cobranças e emergências.</p>
+            </div>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="email" class="required">E-mail</label>
+                    <input id="email" type="email" th:field="*{email}"
+                           placeholder="aluno@exemplo.com"
+                           th:classappend="${#fields.hasErrors('email')} ? ' input-error' : ''">
+                    <span class="field-error" th:errors="*{email}">Informe o e-mail</span>
+                </div>
+                <div class="field">
+                    <label for="phone" class="required">Telefone</label>
+                    <input id="phone" type="tel" th:field="*{phone}" data-mask="phone"
+                           placeholder="(84) 99999-9999"
+                           th:classappend="${#fields.hasErrors('phone')} ? ' input-error' : ''">
+                    <span class="field-error" th:errors="*{phone}">Informe o telefone</span>
+                </div>
+                <div class="field">
+                    <label for="emergencyContact">Contato de emergência</label>
+                    <input id="emergencyContact" type="text" th:field="*{emergencyContact}"
+                           placeholder="Nome e telefone">
+                </div>
+                <div class="field">
+                    <label for="status" class="required">Status do cadastro</label>
+                    <select id="status" th:field="*{status}">
+                        <option th:each="status : ${statuses}" th:value="${status}"
+                                th:text="${status.label}">Ativo</option>
+                    </select>
+                </div>
+                <div class="field field-wide">
+                    <label for="notes">Observações</label>
+                    <textarea id="notes" th:field="*{notes}"
+                              placeholder="Restrições, preferências ou informações relevantes"></textarea>
+                    <span class="field-error" th:errors="*{notes}">Observação muito longa</span>
+                </div>
+            </div>
+        </section>
+
+        <footer class="form-actions">
+            <a th:href="@{/members}" class="button button-secondary">Cancelar</a>
+            <button type="submit" class="button button-primary">Salvar aluno</button>
+        </footer>
+    </form>
+</main>
+</html>

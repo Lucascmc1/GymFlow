@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Visão geral', 'dashboard', ~{::main})}">
+<main>
+    <header class="page-header">
+        <div>
+            <span class="eyebrow">Resumo da operação</span>
+            <h1>Olá, Lucas 👋</h1>
+            <p>Acompanhe o que está acontecendo hoje e tome decisões com rapidez.</p>
+        </div>
+        <div class="page-actions">
+            <a th:href="@{/check-ins}" class="button button-secondary">
+                <svg th:replace="~{fragments/icons :: icon('checkins')}"></svg>
+                Registrar entrada
+            </a>
+            <a th:href="@{/members/new}" class="button button-primary">
+                <svg th:replace="~{fragments/icons :: icon('plus')}"></svg>
+                Novo aluno
+            </a>
+        </div>
+    </header>
+
+    <section class="kpi-grid" aria-label="Indicadores principais">
+        <article class="kpi-card dark">
+            <div class="kpi-top">
+                <span class="kpi-label">Alunos ativos</span>
+                <span class="kpi-icon">
+                    <svg th:replace="~{fragments/icons :: icon('members')}"></svg>
+                </span>
+            </div>
+            <strong class="kpi-value" th:text="${dashboard.activeMembers}">248</strong>
+            <span class="kpi-foot"><strong>Base atual</strong> de alunos regulares</span>
+        </article>
+
+        <article class="kpi-card">
+            <div class="kpi-top">
+                <span class="kpi-label">Receita no mês</span>
+                <span class="kpi-icon">
+                    <svg th:replace="~{fragments/icons :: icon('money')}"></svg>
+                </span>
+            </div>
+            <strong class="kpi-value"
+                    th:text="|R$ ${#numbers.formatDecimal(dashboard.monthlyRevenue, 1, 'POINT', 2, 'COMMA')}|">
+                R$ 24.680,00
+            </strong>
+            <span class="kpi-foot">Pagamentos confirmados no período</span>
+        </article>
+
+        <article class="kpi-card">
+            <div class="kpi-top">
+                <span class="kpi-label">Check-ins hoje</span>
+                <span class="kpi-icon">
+                    <svg th:replace="~{fragments/icons :: icon('checkins')}"></svg>
+                </span>
+            </div>
+            <strong class="kpi-value" th:text="${dashboard.checkInsToday}">76</strong>
+            <span class="kpi-foot">Movimentação registrada até agora</span>
+        </article>
+
+        <article class="kpi-card">
+            <div class="kpi-top">
+                <span class="kpi-label">Cobranças atrasadas</span>
+                <span class="kpi-icon">
+                    <svg th:replace="~{fragments/icons :: icon('alert')}"></svg>
+                </span>
+            </div>
+            <strong class="kpi-value" th:text="${dashboard.overduePayments}">8</strong>
+            <span class="kpi-foot"
+                  th:text="|R$ ${#numbers.formatDecimal(dashboard.receivable, 1, 'POINT', 2, 'COMMA')} a receber|">
+                R$ 1.248,00 a receber
+            </span>
+        </article>
+    </section>
+
+    <section class="dashboard-grid">
+        <article class="card">
+            <header class="card-header">
+                <div>
+                    <h2>Receita dos últimos meses</h2>
+                    <p>Valores de mensalidades efetivamente recebidos</p>
+                </div>
+                <a th:href="@{/reports}" class="card-link">
+                    Ver relatório
+                    <svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>
+                </a>
+            </header>
+            <div class="chart-area" aria-label="Gráfico de receita mensal">
+                <div class="chart-column" th:each="point : ${dashboard.revenueSeries}">
+                    <div class="chart-bar-wrap">
+                        <div class="chart-bar"
+                             th:style="${'height:' + point.percentage + '%'}"
+                             th:attr="data-value=|R$ ${#numbers.formatDecimal(point.value, 1, 'POINT', 2, 'COMMA')}|">
+                        </div>
+                    </div>
+                    <span class="chart-label" th:text="${point.label}">mar</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="card">
+            <header class="card-header">
+                <div>
+                    <h2>Horários mais ativos</h2>
+                    <p>Distribuição de entradas no dia</p>
+                </div>
+            </header>
+            <div class="activity-chart" aria-label="Atividade por horário">
+                <div class="activity-column" th:each="hour : ${dashboard.hourActivity}">
+                    <div class="activity-bar" th:style="${'height:' + hour.percentage + '%'}"
+                         th:title="|${hour.count} check-ins|"></div>
+                    <span th:text="${hour.label}">18h</span>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="dashboard-grid equal">
+        <article class="card">
+            <header class="card-header">
+                <div>
+                    <h2>Entradas recentes</h2>
+                    <p>Últimos alunos que passaram pela recepção</p>
+                </div>
+                <a th:href="@{/check-ins}" class="card-link">
+                    Ver todos
+                    <svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>
+                </a>
+            </header>
+            <div class="list-stack" th:if="${!dashboard.recentCheckIns.empty}">
+                <a class="list-item" th:each="checkIn : ${dashboard.recentCheckIns}"
+                   th:href="@{/members/{id}(id=${checkIn.member.id})}">
+                    <span class="avatar avatar-soft" th:text="${checkIn.member.initials}">MA</span>
+                    <span class="list-item-main">
+                        <strong th:text="${checkIn.member.name}">Marina Alves</strong>
+                        <small th:text="${checkIn.member.email}">marina@example.com</small>
+                    </span>
+                    <span class="list-item-side"
+                          th:text="${#temporals.format(checkIn.checkedInAt, 'HH:mm')}">18:42</span>
+                </a>
+            </div>
+            <div class="empty-state" th:if="${dashboard.recentCheckIns.empty}">
+                <p><strong>Nenhuma entrada registrada</strong>Os check-ins aparecerão aqui.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <header class="card-header">
+                <div>
+                    <h2>Mensalidades em atraso</h2>
+                    <p>Cobranças que precisam de atenção</p>
+                </div>
+                <a th:href="@{/payments(status='OVERDUE')}" class="card-link">
+                    Ver financeiro
+                    <svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>
+                </a>
+            </header>
+            <div class="list-stack" th:if="${!dashboard.overdueList.empty}">
+                <div class="list-item" th:each="payment : ${dashboard.overdueList}">
+                    <span class="avatar avatar-soft" th:text="${payment.membership.member.initials}">PH</span>
+                    <span class="list-item-main">
+                        <strong th:text="${payment.membership.member.name}">Pedro Henrique</strong>
+                        <small th:text="|Venceu em ${#temporals.format(payment.dueDate, 'dd/MM')}|">
+                            Venceu em 14/08
+                        </small>
+                    </span>
+                    <span class="list-item-side"
+                          th:text="|R$ ${#numbers.formatDecimal(payment.amount, 1, 'POINT', 2, 'COMMA')}|">
+                        R$ 149,90
+                    </span>
+                </div>
+            </div>
+            <div class="empty-state" th:if="${dashboard.overdueList.empty}">
+                <p><strong>Tudo em dia</strong>Não há cobranças atrasadas.</p>
+            </div>
+        </article>
+    </section>
+</main>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Nova matrícula', 'memberships', ~{::main})}">
+<main class="form-shell">
+    <header class="form-header">
+        <a th:href="@{/memberships}" class="back-link">
+            <svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>
+            Voltar para matrículas
+        </a>
+        <span class="eyebrow">Novo contrato</span>
+        <h1>Nova matrícula</h1>
+        <p>Escolha o aluno e o plano. As mensalidades serão geradas automaticamente.</p>
+    </header>
+
+    <form class="card form-card" method="post" th:object="${membershipForm}" th:action="@{/memberships}">
+        <div class="form-errors" th:if="${#fields.hasGlobalErrors()}" th:each="error : ${#fields.globalErrors()}" th:text="${error}">Revise os dados.</div>
+        <section class="form-section">
+            <div class="form-section-title"><h2>Dados da contratação</h2><p>Somente alunos e planos ativos podem ser selecionados.</p></div>
+            <div class="form-grid">
+                <div class="field field-wide">
+                    <label for="memberId" class="required">Aluno</label>
+                    <select id="memberId" th:field="*{memberId}">
+                        <option value="">Selecione um aluno</option>
+                        <option th:each="member : ${members}" th:value="${member.id}" th:text="|${member.name} · ${member.cpf}|">Marina Alves</option>
+                    </select>
+                    <span class="field-error" th:errors="*{memberId}">Selecione um aluno</span>
+                </div>
+                <div class="field">
+                    <label for="planId" class="required">Plano</label>
+                    <select id="planId" th:field="*{planId}" data-plan-select>
+                        <option value="" data-price="0">Selecione um plano</option>
+                        <option th:each="plan : ${plans}" th:value="${plan.id}" th:data-price="${plan.monthlyPrice}"
+                                th:text="|${plan.name} · R$ ${#numbers.formatDecimal(plan.monthlyPrice, 1, 'POINT', 2, 'COMMA')}|">Evolve</option>
+                    </select>
+                    <span class="field-error" th:errors="*{planId}">Selecione um plano</span>
+                </div>
+                <div class="field">
+                    <label for="startDate" class="required">Início da vigência</label>
+                    <input id="startDate" type="date" th:field="*{startDate}">
+                    <span class="field-error" th:errors="*{startDate}">Informe a data</span>
+                </div>
+                <div class="field">
+                    <label for="discountPercent">Desconto (%)</label>
+                    <input id="discountPercent" type="number" min="0" max="100" step="0.01"
+                           th:field="*{discountPercent}" data-discount>
+                    <span class="field-error" th:errors="*{discountPercent}">Desconto inválido</span>
+                </div>
+                <div class="field">
+                    <label>Mensalidade estimada</label>
+                    <div style="height:43px;display:flex;align-items:center;padding:0 12px;border-radius:10px;background:var(--green-soft);color:var(--green);font-weight:800"
+                         data-price-preview>R$ 0,00</div>
+                </div>
+            </div>
+        </section>
+        <footer class="form-actions">
+            <a th:href="@{/memberships}" class="button button-secondary">Cancelar</a>
+            <button type="submit" class="button button-primary">Criar matrícula</button>
+        </footer>
+    </form>
+</main>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(${member.name}, 'members', ~{::main})}">
+<main>
+    <a th:href="@{/members}" class="back-link">
+        <svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>
+        Voltar para alunos
+    </a>
+
+    <section class="card detail-hero">
+        <span class="avatar avatar-soft avatar-lg" th:text="${member.initials}">MA</span>
+        <div class="detail-hero-main">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <h1 th:text="${member.name}">Marina Alves</h1>
+                <span class="status"
+                      th:classappend="|status-${#strings.toLowerCase(member.status.name())}|"
+                      th:text="${member.status.label}">Ativo</span>
+            </div>
+            <p th:text="|Aluno desde ${#temporals.format(member.joinDate, 'MMMM/yyyy')} · ${member.age} anos|">
+                Aluno desde março/2026 · 29 anos
+            </p>
+        </div>
+        <div class="page-actions">
+            <a th:href="@{/memberships/new(memberId=${member.id})}" class="button button-primary">
+                <svg th:replace="~{fragments/icons :: icon('plus')}"></svg>
+                Nova matrícula
+            </a>
+            <a th:href="@{/members/{id}/edit(id=${member.id})}" class="button button-secondary">
+                <svg th:replace="~{fragments/icons :: icon('edit')}"></svg>
+                Editar
+            </a>
+        </div>
+    </section>
+
+    <section class="detail-grid">
+        <div>
+            <article class="card">
+                <header class="card-header"><h2>Dados do aluno</h2></header>
+                <div class="info-list">
+                    <div class="info-row"><span>CPF</span><strong th:text="${member.cpf}">000.000.001-91</strong></div>
+                    <div class="info-row"><span>E-mail</span><strong th:text="${member.email}">email</strong></div>
+                    <div class="info-row"><span>Telefone</span><strong th:text="${member.phone}">telefone</strong></div>
+                    <div class="info-row"><span>Nascimento</span><strong th:text="${#temporals.format(member.birthDate, 'dd/MM/yyyy')}">12/03/1997</strong></div>
+                    <div class="info-row"><span>Gênero</span><strong th:text="${member.gender ?: 'Não informado'}">Feminino</strong></div>
+                    <div class="info-row"><span>Emergência</span><strong th:text="${member.emergencyContact ?: 'Não informado'}">Contato</strong></div>
+                </div>
+            </article>
+
+            <form th:action="@{/members/{id}/toggle-status(id=${member.id})}" method="post"
+                  class="card" style="margin-top:16px;padding:18px" data-confirm="Deseja alterar o status deste aluno?">
+                <strong style="display:block;font-size:12px;margin-bottom:4px">Controle de acesso</strong>
+                <p style="margin:0 0 13px;color:var(--ink-muted);font-size:10px">
+                    Alunos inativos não podem registrar novas entradas.
+                </p>
+                <button type="submit" class="button button-secondary button-block"
+                        th:text="${member.status.name() == 'ACTIVE'} ? 'Desativar cadastro' : 'Ativar cadastro'">
+                    Desativar cadastro
+                </button>
+            </form>
+        </div>
+
+        <article class="card">
+            <div class="tabs" data-tabs>
+                <button class="tab-button active" type="button" data-tab="memberships">Matrículas</button>
+                <button class="tab-button" type="button" data-tab="payments">Financeiro</button>
+                <button class="tab-button" type="button" data-tab="workouts">Treinos</button>
+                <button class="tab-button" type="button" data-tab="assessments">Avaliações</button>
+            </div>
+
+            <div class="tab-panel active" data-tab-panel="memberships">
+                <div class="table-responsive" th:if="${!memberships.empty}">
+                    <table class="data-table">
+                        <thead><tr><th>Plano</th><th>Período</th><th>Mensalidade</th><th>Status</th></tr></thead>
+                        <tbody>
+                        <tr th:each="membership : ${memberships}">
+                            <td><strong th:text="${membership.plan.name}">Evolve</strong></td>
+                            <td th:text="|${#temporals.format(membership.startDate, 'dd/MM/yy')} — ${#temporals.format(membership.endDate, 'dd/MM/yy')}|">01/01 — 01/07</td>
+                            <td th:text="|R$ ${#numbers.formatDecimal(membership.monthlyPrice, 1, 'POINT', 2, 'COMMA')}|">R$ 149,90</td>
+                            <td><span class="status" th:classappend="|status-${#strings.toLowerCase(membership.status.name())}|" th:text="${membership.status.label}">Ativa</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="empty-state" th:if="${memberships.empty}">
+                    <p><strong>Nenhuma matrícula</strong>Vincule o aluno a um plano para começar.</p>
+                </div>
+            </div>
+
+            <div class="tab-panel" data-tab-panel="payments">
+                <div class="table-responsive" th:if="${!payments.empty}">
+                    <table class="data-table">
+                        <thead><tr><th>Referência</th><th>Vencimento</th><th>Valor</th><th>Status</th></tr></thead>
+                        <tbody>
+                        <tr th:each="payment : ${payments}">
+                            <td th:text="${#temporals.format(payment.referenceDate, 'MM/yyyy')}">08/2026</td>
+                            <td th:text="${#temporals.format(payment.dueDate, 'dd/MM/yyyy')}">10/08/2026</td>
+                            <td th:text="|R$ ${#numbers.formatDecimal(payment.amount, 1, 'POINT', 2, 'COMMA')}|">R$ 149,90</td>
+                            <td><span class="status" th:classappend="|status-${#strings.toLowerCase(payment.status.name())}|" th:text="${payment.status.label}">Pago</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="empty-state" th:if="${payments.empty}"><p><strong>Sem cobranças</strong>As mensalidades aparecerão aqui.</p></div>
+            </div>
+
+            <div class="tab-panel" data-tab-panel="workouts">
+                <div class="list-stack" th:if="${!workouts.empty}">
+                    <a class="list-item" th:each="workout : ${workouts}" th:href="@{/workouts/{id}(id=${workout.id})}">
+                        <span class="kpi-icon"><svg th:replace="~{fragments/icons :: icon('workouts')}"></svg></span>
+                        <span class="list-item-main"><strong th:text="${workout.title}">Treino A</strong><small th:text="|${workout.goal} · ${workout.coach}|">Força</small></span>
+                        <svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>
+                    </a>
+                </div>
+                <div class="empty-state" th:if="${workouts.empty}"><p><strong>Nenhum treino</strong>Crie uma ficha para este aluno.</p></div>
+            </div>
+
+            <div class="tab-panel" data-tab-panel="assessments">
+                <div class="table-responsive" th:if="${!assessments.empty}">
+                    <table class="data-table">
+                        <thead><tr><th>Data</th><th>Peso</th><th>Gordura</th><th>IMC</th></tr></thead>
+                        <tbody>
+                        <tr th:each="assessment : ${assessments}">
+                            <td th:text="${#temporals.format(assessment.assessmentDate, 'dd/MM/yyyy')}">25/08/2026</td>
+                            <td th:text="|${assessment.weight} kg|">66.8 kg</td>
+                            <td th:text="${assessment.bodyFatPercentage != null} ? |${assessment.bodyFatPercentage}%| : '—'">21.7%</td>
+                            <td th:text="${assessment.bmi}">23.67</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="empty-state" th:if="${assessments.empty}"><p><strong>Sem avaliações</strong>Registre a primeira medição.</p></div>
+            </div>
+        </article>
+    </section>
+</main>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111813">
+    <title>Entrar · GymFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="login-page">
+    <section class="login-panel">
+        <a class="brand" href="#" aria-label="GymFlow">
+            <span class="brand-mark" aria-hidden="true">
+                <span></span><span></span><span></span>
+            </span>
+            <span class="brand-name">Gym<span>Flow</span></span>
+        </a>
+
+        <div class="login-form-wrap">
+            <span class="eyebrow">Bem-vindo de volta</span>
+            <h1>Acesse sua conta</h1>
+            <p>Entre para acompanhar sua academia em um só lugar.</p>
+
+            <div class="login-alert" th:if="${param.error}">
+                Usuário ou senha incorretos. Verifique os dados e tente novamente.
+            </div>
+            <div class="login-alert success" th:if="${param.logout}">
+                Sua sessão foi encerrada com segurança.
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="field">
+                    <label class="required" for="username">Usuário</label>
+                    <input id="username" name="username" type="text" autocomplete="username"
+                           placeholder="Digite seu usuário" autofocus required>
+                </div>
+                <div class="field">
+                    <label class="required" for="password">Senha</label>
+                    <input id="password" name="password" type="password"
+                           autocomplete="current-password" placeholder="Digite sua senha" required>
+                </div>
+                <button type="submit" class="button button-primary button-block">Entrar no painel</button>
+            </form>
+
+            <div class="demo-credentials">
+                <span>Ambiente demonstrativo</span>
+                <strong>admin / admin123</strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="login-visual" aria-label="Apresentação do sistema">
+        <div class="visual-content">
+            <span class="eyebrow">Gestão que acompanha seu ritmo</span>
+            <h2>Sua academia mais forte, <span>todos os dias.</span></h2>
+            <p>Alunos, treinos e financeiro conectados em uma experiência simples para sua equipe.</p>
+            <div class="visual-stats">
+                <div class="visual-stat">
+                    <strong>360°</strong>
+                    <span>Visão do negócio</span>
+                </div>
+                <div class="visual-stat">
+                    <strong>1 painel</strong>
+                    <span>Toda a operação</span>
+                </div>
+                <div class="visual-stat">
+                    <strong>24/7</strong>
+                    <span>Dados disponíveis</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

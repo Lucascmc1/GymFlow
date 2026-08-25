@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Financeiro', 'payments', ~{::main})}">
+<main>
+    <header class="page-header">
+        <div>
+            <span class="eyebrow">Recebimentos</span>
+            <h1>Financeiro</h1>
+            <p>Acompanhe mensalidades, vencimentos e confirmação de pagamentos.</p>
+        </div>
+        <div class="page-actions">
+            <a th:href="@{/reports}" class="button button-secondary">
+                <svg th:replace="~{fragments/icons :: icon('reports')}"></svg>
+                Ver relatórios
+            </a>
+        </div>
+    </header>
+
+    <form class="toolbar" method="get" th:action="@{/payments}">
+        <span style="flex:1;color:var(--ink-soft);font-size:11px">Visualize as cobranças pelo status de recebimento</span>
+        <select class="filter-select" name="status">
+            <option value="">Todos os status</option>
+            <option th:each="status : ${statuses}" th:value="${status}" th:text="${status.label}"
+                    th:selected="${status == selectedStatus}">Pago</option>
+        </select>
+        <button type="submit" class="button button-secondary">Aplicar</button>
+    </form>
+
+    <section class="card table-card">
+        <div class="table-responsive" th:if="${!payments.empty}">
+            <table class="data-table">
+                <thead><tr><th>Aluno</th><th>Referência</th><th>Vencimento</th><th>Valor</th><th>Forma</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="payment : ${payments}">
+                    <td>
+                        <a class="table-person" th:href="@{/members/{id}(id=${payment.membership.member.id})}">
+                            <span class="avatar avatar-soft" th:text="${payment.membership.member.initials}">MA</span>
+                            <span><strong th:text="${payment.membership.member.name}">Marina Alves</strong><small th:text="${payment.membership.plan.name}">Evolve</small></span>
+                        </a>
+                    </td>
+                    <td th:text="${#temporals.format(payment.referenceDate, 'MM/yyyy')}">08/2026</td>
+                    <td th:text="${#temporals.format(payment.dueDate, 'dd/MM/yyyy')}">10/08/2026</td>
+                    <td><strong th:text="|R$ ${#numbers.formatDecimal(payment.amount, 1, 'POINT', 2, 'COMMA')}|">R$ 149,90</strong></td>
+                    <td th:text="${payment.method != null ? payment.method.label : '—'}">Pix</td>
+                    <td><span class="status" th:classappend="|status-${#strings.toLowerCase(payment.status.name())}|" th:text="${payment.status.label}">Pago</span></td>
+                    <td>
+                        <button th:if="${payment.status.name() == 'PENDING' || payment.status.name() == 'OVERDUE'}"
+                                type="button" class="button button-primary button-sm" data-modal-open="paymentModal"
+                                th:data-action="@{/payments/{id}/pay(id=${payment.id})}"
+                                th:data-title="|Receber de ${payment.membership.member.name}|"
+                                th:data-description="|Confirme o recebimento de R$ ${#numbers.formatDecimal(payment.amount, 1, 'POINT', 2, 'COMMA')}.|">
+                            Receber
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty-state" th:if="${payments.empty}"><p><strong>Nenhuma cobrança encontrada</strong>Altere o filtro para consultar outros registros.</p></div>
+        <footer class="pagination-foot"><span th:text="|${payments.size()} cobrança(s)|">30 cobranças</span><span>Vencimentos atualizados automaticamente</span></footer>
+    </section>
+
+    <div class="modal" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+        <div class="modal-card">
+            <span class="eyebrow">Baixa manual</span>
+            <h2 id="paymentModalTitle" data-modal-title>Confirmar pagamento</h2>
+            <p data-modal-description>Informe como o pagamento foi recebido.</p>
+            <form method="post" th:object="${paymentForm}" th:action="@{/payments/0/pay}">
+                <div class="form-grid">
+                    <div class="field field-wide">
+                        <label for="method" class="required">Forma de pagamento</label>
+                        <select id="method" th:field="*{method}">
+                            <option th:each="method : ${methods}" th:value="${method}" th:text="${method.label}">Pix</option>
+                        </select>
+                    </div>
+                    <div class="field field-wide">
+                        <label for="paidAt" class="required">Data do pagamento</label>
+                        <input id="paidAt" type="date" th:field="*{paidAt}">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="button button-secondary" data-modal-close>Cancelar</button>
+                    <button type="submit" class="button button-primary">Confirmar recebimento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</html>

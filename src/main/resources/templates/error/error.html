@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Erro', '', ~{::main})}">
+<main class="error-page">
+    <div class="error-content">
+        <div class="error-code" th:text="${statusCode ?: status}">404</div>
+        <h1 th:text="${errorTitle ?: error}">Página não encontrada</h1>
+        <p th:text="${errorMessage ?: message}">Não foi possível abrir este conteúdo.</p>
+        <a th:href="@{/dashboard}" class="button button-primary">Voltar para a visão geral</a>
+    </div>
+</main>
+</html>

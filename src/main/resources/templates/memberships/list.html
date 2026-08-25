@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Matrículas', 'memberships', ~{::main})}">
+<main>
+    <header class="page-header">
+        <div>
+            <span class="eyebrow">Contratos</span>
+            <h1>Matrículas</h1>
+            <p>Acompanhe vínculos, vigências e valores contratados.</p>
+        </div>
+        <div class="page-actions">
+            <a th:href="@{/memberships/new}" class="button button-primary">
+                <svg th:replace="~{fragments/icons :: icon('plus')}"></svg>
+                Nova matrícula
+            </a>
+        </div>
+    </header>
+
+    <form class="toolbar" method="get" th:action="@{/memberships}">
+        <span style="flex:1;color:var(--ink-soft);font-size:11px">Filtre os contratos pelo estágio atual</span>
+        <select class="filter-select" name="status">
+            <option value="">Todos os status</option>
+            <option th:each="status : ${statuses}" th:value="${status}" th:text="${status.label}"
+                    th:selected="${status == selectedStatus}">Ativa</option>
+        </select>
+        <button type="submit" class="button button-secondary">Aplicar</button>
+    </form>
+
+    <section class="card table-card">
+        <div class="table-responsive" th:if="${!memberships.empty}">
+            <table class="data-table">
+                <thead><tr><th>Aluno</th><th>Plano</th><th>Vigência</th><th>Mensalidade</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="membership : ${memberships}">
+                    <td>
+                        <a class="table-person" th:href="@{/members/{id}(id=${membership.member.id})}">
+                            <span class="avatar avatar-soft" th:text="${membership.member.initials}">MA</span>
+                            <span><strong th:text="${membership.member.name}">Marina Alves</strong><small th:text="${membership.member.email}">email</small></span>
+                        </a>
+                    </td>
+                    <td><strong th:text="${membership.plan.name}">Evolve</strong></td>
+                    <td th:text="|${#temporals.format(membership.startDate, 'dd/MM/yy')} — ${#temporals.format(membership.endDate, 'dd/MM/yy')}|">01/01 — 01/07</td>
+                    <td>
+                        <strong th:text="|R$ ${#numbers.formatDecimal(membership.monthlyPrice, 1, 'POINT', 2, 'COMMA')}|">R$ 149,90</strong>
+                        <small th:if="${membership.discountPercent.signum() > 0}" th:text="| · ${membership.discountPercent}% desc.|">10% desc.</small>
+                    </td>
+                    <td><span class="status" th:classappend="|status-${#strings.toLowerCase(membership.status.name())}|" th:text="${membership.status.label}">Ativa</span></td>
+                    <td>
+                        <form th:if="${membership.status.name() == 'ACTIVE'}"
+                              th:action="@{/memberships/{id}/cancel(id=${membership.id})}" method="post"
+                              data-confirm="Deseja realmente cancelar esta matrícula?">
+                            <button class="button button-danger button-sm" type="submit">Cancelar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty-state" th:if="${memberships.empty}"><p><strong>Nenhuma matrícula encontrada</strong>Crie um vínculo entre aluno e plano.</p></div>
+        <footer class="pagination-foot"><span th:text="|${memberships.size()} matrícula(s)|">10 matrículas</span><span>Contratos organizados por início</span></footer>
+    </section>
+</main>
+</html>

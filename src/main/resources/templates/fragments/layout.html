@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(title, activePage, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111813">
+    <title th:text="${title + ' · GymFlow'}">GymFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <span class="brand-mark" aria-hidden="true">
+                <span></span><span></span><span></span>
+            </span>
+            <span class="brand-name">Gym<span>Flow</span></span>
+        </div>
+
+        <nav class="main-nav" aria-label="Navegação principal">
+            <span class="nav-label">Gestão</span>
+            <a th:href="@{/dashboard}" class="nav-item"
+               th:classappend="${activePage == 'dashboard'} ? ' active' : ''">
+                <svg th:replace="~{fragments/icons :: icon('dashboard')}"></svg>
+                <span>Visão geral</span>
+            </a>
+            <a th:href="@{/members}" class="nav-item"
+               th:classappend="${activePage == 'members'} ? ' active' : ''">
+                <svg th:replace="~{fragments/icons :: icon('members')}"></svg>
+                <span>Alunos</span>
+            </a>
+            <a th:href="@{/memberships}" class="nav-item"
+               th:classappend="${activePage == 'memberships'} ? ' active' : ''">
+                <svg th:replace="~{fragments/icons :: icon('memberships')}"></svg>
+                <span>Matrículas</span>
+            </a>
+            <a th:href="@{/plans}" class="nav-item"
+               th:classappend="${activePage == 'plans'} ? ' active' : ''">
+                <svg th:replace="~{fragments/icons :: icon('plans')}"></svg>
+                <span>Planos</span>
+            </a>
+            <a th:href="@{/payments}" class="nav-item"
+               th:classappend="${activePage == 'payments'} ? ' active' : ''">
+                <svg th:replace="~{fragments/icons :: icon('payments')}"></svg>
+                <span>Financeiro</span>
+            </a>
+
+            <span class="nav-label nav-label-spaced">Operação</span>
+            <a th:href="@{/check-ins}" class="nav-item"
+               th:classappend="${activePage == 'checkins'} ? ' active' : ''">
+                <svg th:replace="~{fragments/icons :: icon('checkins')}"></svg>
+                <span>Check-ins</span>
+            </a>
+            <a th:href="@{/workouts}" class="nav-item"
+               th:classappend="${activePage == 'workouts'} ? ' active' : ''">
+                <svg th:replace="~{fragments/icons :: icon('workouts')}"></svg>
+                <span>Treinos</span>
+            </a>
+            <a th:href="@{/assessments}" class="nav-item"
+               th:classappend="${activePage == 'assessments'} ? ' active' : ''">
+                <svg th:replace="~{fragments/icons :: icon('assessments')}"></svg>
+                <span>Avaliações</span>
+            </a>
+            <a th:href="@{/reports}" class="nav-item"
+               th:classappend="${activePage == 'reports'} ? ' active' : ''">
+                <svg th:replace="~{fragments/icons :: icon('reports')}"></svg>
+                <span>Relatórios</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="support-card">
+                <span class="support-dot"></span>
+                <div>
+                    <strong>Sistema operacional</strong>
+                    <small>Todos os serviços online</small>
+                </div>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button class="logout-button" type="submit">
+                    <svg th:replace="~{fragments/icons :: icon('logout')}"></svg>
+                    Sair
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="workspace">
+        <header class="topbar">
+            <button class="icon-button menu-button" id="menuButton" aria-label="Abrir menu">
+                <svg th:replace="~{fragments/icons :: icon('menu')}"></svg>
+            </button>
+            <div class="topbar-date">
+                <span class="eyebrow">Painel administrativo</span>
+                <span th:text="${todayLabel}">Terça-feira, 25 de agosto</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-button notification-button" aria-label="Notificações">
+                    <svg th:replace="~{fragments/icons :: icon('bell')}"></svg>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="user-chip">
+                    <span class="avatar">LC</span>
+                    <div>
+                        <strong>Lucas Costa</strong>
+                        <small>Administrador</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-container">
+            <div class="toast toast-success" th:if="${successMessage}" data-toast>
+                <span class="toast-icon">✓</span>
+                <span th:text="${successMessage}">Operação concluída.</span>
+                <button type="button" aria-label="Fechar" data-toast-close>×</button>
+            </div>
+            <div class="toast toast-error" th:if="${errorMessage}" data-toast>
+                <span class="toast-icon">!</span>
+                <span th:text="${errorMessage}">Não foi possível concluir.</span>
+                <button type="button" aria-label="Fechar" data-toast-close>×</button>
+            </div>
+
+            <th:block th:replace="${content}"/>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

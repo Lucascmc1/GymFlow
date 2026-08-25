@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Alunos', 'members', ~{::main})}">
+<main>
+    <header class="page-header">
+        <div>
+            <span class="eyebrow">Relacionamento</span>
+            <h1>Alunos</h1>
+            <p>Consulte cadastros, acompanhe o status e acesse o histórico completo.</p>
+        </div>
+        <div class="page-actions">
+            <a th:href="@{/members/new}" class="button button-primary">
+                <svg th:replace="~{fragments/icons :: icon('plus')}"></svg>
+                Novo aluno
+            </a>
+        </div>
+    </header>
+
+    <form class="toolbar" method="get" th:action="@{/members}">
+        <div class="search-field">
+            <svg th:replace="~{fragments/icons :: icon('search')}"></svg>
+            <input type="search" name="query" th:value="${query}"
+                   placeholder="Buscar por nome, CPF ou e-mail">
+        </div>
+        <select class="filter-select" name="status" aria-label="Filtrar por status">
+            <option value="">Todos os status</option>
+            <option th:each="status : ${statuses}" th:value="${status}"
+                    th:text="${status.label}" th:selected="${status == selectedStatus}">Ativo</option>
+        </select>
+        <button type="submit" class="button button-secondary">Filtrar</button>
+    </form>
+
+    <section class="card table-card">
+        <div class="table-responsive" th:if="${!members.empty}">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Contato</th>
+                    <th>Entrada</th>
+                    <th>Status</th>
+                    <th style="text-align:right">Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="member : ${members}">
+                    <td>
+                        <a class="table-person" th:href="@{/members/{id}(id=${member.id})}">
+                            <span class="avatar avatar-soft" th:text="${member.initials}">MA</span>
+                            <span>
+                                <strong th:text="${member.name}">Marina Alves</strong>
+                                <small th:text="|CPF ${member.cpf}|">CPF 000.000.001-91</small>
+                            </span>
+                        </a>
+                    </td>
+                    <td>
+                        <div class="table-person">
+                            <span>
+                                <strong th:text="${member.email}">marina@example.com</strong>
+                                <small th:text="${member.phone}">(84) 99999-9999</small>
+                            </span>
+                        </div>
+                    </td>
+                    <td th:text="${#temporals.format(member.joinDate, 'dd/MM/yyyy')}">12/03/2026</td>
+                    <td>
+                        <span class="status"
+                              th:classappend="|status-${#strings.toLowerCase(member.status.name())}|"
+                              th:text="${member.status.label}">Ativo</span>
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <a class="button button-secondary button-sm"
+                               th:href="@{/members/{id}(id=${member.id})}">Ver perfil</a>
+                            <a class="button button-secondary button-sm"
+                               th:href="@{/members/{id}/edit(id=${member.id})}" aria-label="Editar">
+                                <svg th:replace="~{fragments/icons :: icon('edit')}"></svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty-state" th:if="${members.empty}">
+            <p><strong>Nenhum aluno encontrado</strong>Ajuste os filtros ou cadastre um novo aluno.</p>
+        </div>
+        <footer class="pagination-foot">
+            <span th:text="|${members.size()} aluno(s) encontrado(s)|">12 alunos encontrados</span>
+            <span>Dados atualizados em tempo real</span>
+        </footer>
+    </section>
+</main>
+</html>

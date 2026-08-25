@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Novo treino', 'workouts', ~{::main})}">
+<main class="form-shell">
+    <header class="form-header">
+        <a th:href="@{/workouts}" class="back-link"><svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>Voltar para treinos</a>
+        <span class="eyebrow">Nova prescrição</span>
+        <h1>Criar treino</h1>
+        <p>Defina a ficha primeiro. Os exercícios serão adicionados na próxima etapa.</p>
+    </header>
+    <form class="card form-card" th:action="@{/workouts}" method="post" th:object="${workoutForm}">
+        <section class="form-section">
+            <div class="form-section-title"><h2>Identificação da ficha</h2><p>Use um título simples que o aluno reconheça facilmente.</p></div>
+            <div class="form-grid">
+                <div class="field field-wide">
+                    <label for="memberId" class="required">Aluno</label>
+                    <select id="memberId" th:field="*{memberId}">
+                        <option value="">Selecione um aluno</option>
+                        <option th:each="member : ${members}" th:value="${member.id}" th:text="|${member.name} · ${member.cpf}|">Marina Alves</option>
+                    </select>
+                    <span class="field-error" th:errors="*{memberId}">Selecione um aluno</span>
+                </div>
+                <div class="field">
+                    <label for="title" class="required">Nome da ficha</label>
+                    <input id="title" th:field="*{title}" placeholder="Ex.: Treino A · Força">
+                    <span class="field-error" th:errors="*{title}">Informe o nome</span>
+                </div>
+                <div class="field">
+                    <label for="goal" class="required">Objetivo</label>
+                    <input id="goal" th:field="*{goal}" placeholder="Ex.: Hipertrofia e força">
+                    <span class="field-error" th:errors="*{goal}">Informe o objetivo</span>
+                </div>
+                <div class="field">
+                    <label for="coach" class="required">Profissional responsável</label>
+                    <input id="coach" th:field="*{coach}" placeholder="Nome do treinador">
+                    <span class="field-error" th:errors="*{coach}">Informe o responsável</span>
+                </div>
+                <div class="field" style="display:flex;align-items:end;padding-bottom:11px">
+                    <label class="checkbox-row" for="active"><input id="active" type="checkbox" th:field="*{active}">Ficha ativa</label>
+                </div>
+            </div>
+        </section>
+        <footer class="form-actions">
+            <a th:href="@{/workouts}" class="button button-secondary">Cancelar</a>
+            <button type="submit" class="button button-primary">Criar e adicionar exercícios</button>
+        </footer>
+    </form>
+</main>
+</html>

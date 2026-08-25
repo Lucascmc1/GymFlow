@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Avaliações', 'assessments', ~{::main})}">
+<main>
+    <header class="page-header">
+        <div><span class="eyebrow">Evolução física</span><h1>Avaliações</h1><p>Acompanhe medidas corporais e indicadores de progresso.</p></div>
+        <div class="page-actions"><a th:href="@{/assessments/new}" class="button button-primary"><svg th:replace="~{fragments/icons :: icon('plus')}"></svg>Nova avaliação</a></div>
+    </header>
+    <section class="assessment-grid" th:if="${!assessments.empty}">
+        <article class="card assessment-card" th:each="assessment : ${assessments}">
+            <div class="assessment-card-top">
+                <div class="table-person"><span class="avatar avatar-soft" th:text="${assessment.member.initials}">MA</span><span><strong th:text="${assessment.member.name}">Marina Alves</strong><small th:text="${#temporals.format(assessment.assessmentDate, 'dd/MM/yyyy')}">25/08/2026</small></span></div>
+                <span class="kpi-icon"><svg th:replace="~{fragments/icons :: icon('assessments')}"></svg></span>
+            </div>
+            <h2>Composição corporal</h2>
+            <p th:text="|Altura registrada: ${assessment.height} m|">Altura: 1.68m</p>
+            <div class="metric-row">
+                <div class="metric-box"><span>Peso</span><strong th:text="|${assessment.weight} kg|">66.8 kg</strong></div>
+                <div class="metric-box"><span>IMC</span><strong th:text="${assessment.bmi}">23.67</strong></div>
+                <div class="metric-box"><span>Gordura</span><strong th:text="${assessment.bodyFatPercentage != null} ? |${assessment.bodyFatPercentage}%| : '—'">21.7%</strong></div>
+                <div class="metric-box"><span>Massa magra</span><strong th:text="${assessment.muscleMass != null} ? |${assessment.muscleMass} kg| : '—'">47.1 kg</strong></div>
+            </div>
+            <a th:href="@{/members/{id}(id=${assessment.member.id})}" class="button button-secondary button-block" style="margin-top:16px">Ver histórico do aluno</a>
+        </article>
+    </section>
+    <section class="card empty-state" th:if="${assessments.empty}"><p><strong>Nenhuma avaliação registrada</strong>Comece a acompanhar a evolução de um aluno.</p></section>
+</main>
+</html>

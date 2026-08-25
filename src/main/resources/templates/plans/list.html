@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Planos', 'plans', ~{::main})}">
+<main>
+    <header class="page-header">
+        <div>
+            <span class="eyebrow">Produtos</span>
+            <h1>Planos</h1>
+            <p>Organize as modalidades comerciais oferecidas aos alunos.</p>
+        </div>
+        <div class="page-actions">
+            <a th:href="@{/plans/new}" class="button button-primary">
+                <svg th:replace="~{fragments/icons :: icon('plus')}"></svg>
+                Novo plano
+            </a>
+        </div>
+    </header>
+
+    <section class="plan-grid" th:if="${!plans.empty}">
+        <article class="card plan-card" th:each="plan, stat : ${plans}"
+                 th:classappend="${stat.last} ? ' featured' : ''">
+            <div class="plan-name">
+                <h2 th:text="${plan.name}">Performance</h2>
+                <span class="status" th:classappend="${plan.active} ? 'status-active' : 'status-inactive'"
+                      th:text="${plan.active} ? 'Ativo' : 'Inativo'">Ativo</span>
+            </div>
+            <p class="plan-description" th:text="${plan.description}">Descrição do plano.</p>
+            <div class="plan-price">
+                <span th:text="|R$ ${#numbers.formatDecimal(plan.monthlyPrice, 1, 'POINT', 2, 'COMMA')}|">R$ 219,90</span>
+                <small>/ mês</small>
+            </div>
+            <ul class="feature-list">
+                <li th:each="feature : ${plan.featureList}" th:text="${feature}">Acesso total</li>
+            </ul>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;position:relative;z-index:2">
+                <span style="font-size:10px;color:var(--ink-muted)" th:text="|Contrato de ${plan.durationMonths} mês(es)|">12 meses</span>
+                <a th:href="@{/plans/{id}/edit(id=${plan.id})}" class="button button-secondary button-sm">
+                    <svg th:replace="~{fragments/icons :: icon('edit')}"></svg>
+                    Editar
+                </a>
+            </div>
+        </article>
+    </section>
+    <section class="card empty-state" th:if="${plans.empty}">
+        <p><strong>Nenhum plano cadastrado</strong>Crie a primeira opção comercial da academia.</p>
+    </section>
+</main>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Check-ins', 'checkins', ~{::main})}">
+<main>
+    <header class="page-header">
+        <div>
+            <span class="eyebrow">Recepção</span>
+            <h1>Check-ins</h1>
+            <p>Valide a entrada dos alunos e acompanhe o movimento da academia.</p>
+        </div>
+        <div class="page-actions">
+            <button class="button button-primary" type="button" data-modal-open="checkInModal">
+                <svg th:replace="~{fragments/icons :: icon('checkins')}"></svg>
+                Registrar entrada
+            </button>
+        </div>
+    </header>
+
+    <section class="dashboard-grid">
+        <article class="card" style="padding:26px;background:var(--sidebar);color:white;position:relative;overflow:hidden">
+            <span class="eyebrow">Acesso rápido</span>
+            <h2 style="margin:7px 0 8px;font:800 25px/1.2 Manrope,sans-serif;letter-spacing:-.8px">Recepção sem filas</h2>
+            <p style="max-width:530px;margin:0 0 20px;color:#9ca79e">Selecione o aluno para validar cadastro e matrícula. Uma entrada por aluno é permitida a cada dia.</p>
+            <button class="button button-primary" type="button" data-modal-open="checkInModal">Fazer check-in agora</button>
+        </article>
+        <article class="card" style="padding:22px">
+            <div class="kpi-top"><span class="kpi-label">Movimento recente</span><span class="kpi-icon"><svg th:replace="~{fragments/icons :: icon('clock')}"></svg></span></div>
+            <strong class="kpi-value" th:text="${checkIns.size()}">38</strong>
+            <span class="kpi-foot">Últimos registros disponíveis no painel</span>
+        </article>
+    </section>
+
+    <section class="card table-card">
+        <header class="card-header"><div><h2>Histórico de entradas</h2><p>Registros mais recentes primeiro</p></div></header>
+        <div class="table-responsive" th:if="${!checkIns.empty}">
+            <table class="data-table">
+                <thead><tr><th>Aluno</th><th>Data</th><th>Horário</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="checkIn : ${checkIns}">
+                    <td>
+                        <a class="table-person" th:href="@{/members/{id}(id=${checkIn.member.id})}">
+                            <span class="avatar avatar-soft" th:text="${checkIn.member.initials}">MA</span>
+                            <span><strong th:text="${checkIn.member.name}">Marina Alves</strong><small th:text="${checkIn.member.email}">email</small></span>
+                        </a>
+                    </td>
+                    <td th:text="${#temporals.format(checkIn.checkedInAt, 'dd/MM/yyyy')}">25/08/2026</td>
+                    <td><strong th:text="${#temporals.format(checkIn.checkedInAt, 'HH:mm')}">18:42</strong></td>
+                    <td><span class="status status-active">Entrada liberada</span></td>
+                    <td><a class="button button-secondary button-sm" th:href="@{/members/{id}(id=${checkIn.member.id})}">Ver aluno</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty-state" th:if="${checkIns.empty}"><p><strong>Nenhum check-in</strong>Registre a primeira entrada do dia.</p></div>
+    </section>
+
+    <div class="modal" id="checkInModal" role="dialog" aria-modal="true" aria-labelledby="checkInModalTitle">
+        <div class="modal-card">
+            <span class="eyebrow">Controle de acesso</span>
+            <h2 id="checkInModalTitle">Registrar check-in</h2>
+            <p>Selecione o aluno. O sistema verificará cadastro e matrícula antes de liberar.</p>
+            <form th:action="@{/check-ins}" method="post" th:object="${checkInForm}">
+                <div class="field">
+                    <label for="memberId" class="required">Aluno</label>
+                    <select id="memberId" th:field="*{memberId}">
+                        <option value="">Selecione pelo nome ou CPF</option>
+                        <option th:each="member : ${members}" th:value="${member.id}" th:text="|${member.name} · ${member.cpf}|">Marina Alves</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="button button-secondary" data-modal-close>Cancelar</button>
+                    <button type="submit" class="button button-primary">Validar e liberar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</html>

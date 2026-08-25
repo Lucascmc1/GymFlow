@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(${formTitle}, 'plans', ~{::main})}">
+<main class="form-shell">
+    <header class="form-header">
+        <a th:href="@{/plans}" class="back-link">
+            <svg th:replace="~{fragments/icons :: icon('arrow')}"></svg>
+            Voltar para planos
+        </a>
+        <span class="eyebrow">Configuração comercial</span>
+        <h1 th:text="${formTitle}">Novo plano</h1>
+        <p>Defina preço, duração e benefícios percebidos pelo aluno.</p>
+    </header>
+
+    <form class="card form-card" method="post" th:object="${planForm}"
+          th:action="${planId == null} ? @{/plans} : @{/plans/{id}(id=${planId})}">
+        <div class="form-errors" th:if="${#fields.hasGlobalErrors()}"
+             th:each="error : ${#fields.globalErrors()}" th:text="${error}">
+            Revise os dados informados.
+        </div>
+        <section class="form-section">
+            <div class="form-section-title">
+                <h2>Dados do plano</h2>
+                <p>Essas informações serão exibidas nos fluxos de matrícula.</p>
+            </div>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="name" class="required">Nome</label>
+                    <input id="name" th:field="*{name}" placeholder="Ex.: Performance">
+                    <span class="field-error" th:errors="*{name}">Informe o nome</span>
+                </div>
+                <div class="field">
+                    <label for="durationMonths" class="required">Duração em meses</label>
+                    <input id="durationMonths" type="number" min="1" max="36" th:field="*{durationMonths}">
+                    <span class="field-error" th:errors="*{durationMonths}">Informe a duração</span>
+                </div>
+                <div class="field">
+                    <label for="monthlyPrice" class="required">Mensalidade</label>
+                    <input id="monthlyPrice" type="number" min="1" step="0.01" th:field="*{monthlyPrice}" placeholder="149,90">
+                    <span class="field-error" th:errors="*{monthlyPrice}">Informe o valor</span>
+                </div>
+                <div class="field" style="display:flex;align-items:end;padding-bottom:11px">
+                    <label class="checkbox-row" for="active">
+                        <input id="active" type="checkbox" th:field="*{active}">
+                        Disponível para novas matrículas
+                    </label>
+                </div>
+                <div class="field field-wide">
+                    <label for="description" class="required">Descrição</label>
+                    <textarea id="description" th:field="*{description}" style="min-height:75px"
+                              placeholder="Resuma a proposta deste plano"></textarea>
+                    <span class="field-error" th:errors="*{description}">Informe a descrição</span>
+                </div>
+                <div class="field field-wide">
+                    <label for="features" class="required">Benefícios</label>
+                    <textarea id="features" th:field="*{features}"
+                              placeholder="Digite um benefício por linha"></textarea>
+                    <span class="field-error" th:errors="*{features}">Informe os benefícios</span>
+                </div>
+            </div>
+        </section>
+        <footer class="form-actions">
+            <a th:href="@{/plans}" class="button button-secondary">Cancelar</a>
+            <button type="submit" class="button button-primary">Salvar plano</button>
+        </footer>
+    </form>
+</main>
+</html>

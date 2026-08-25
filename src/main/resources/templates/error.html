@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Erro', '', ~{::main})}">
+<main class="error-page">
+    <div class="error-content">
+        <div class="error-code" th:text="${status}">500</div>
+        <h1>Algo não saiu como esperado</h1>
+        <p>Não foi possível concluir a solicitação. Tente novamente em instantes.</p>
+        <a th:href="@{/dashboard}" class="button button-primary">Voltar para a visão geral</a>
+    </div>
+</main>
+</html>

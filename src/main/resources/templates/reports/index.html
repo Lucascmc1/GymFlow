@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout('Relatórios', 'reports', ~{::main})}">
+<main>
+    <header class="page-header">
+        <div><span class="eyebrow">Inteligência financeira</span><h1>Relatórios</h1><p>Entenda o desempenho dos recebimentos e o volume da carteira.</p></div>
+        <div class="page-actions"><a th:href="@{/payments}" class="button button-secondary"><svg th:replace="~{fragments/icons :: icon('payments')}"></svg>Abrir financeiro</a></div>
+    </header>
+
+    <section class="kpi-grid">
+        <article class="kpi-card dark">
+            <div class="kpi-top"><span class="kpi-label">Receita atual</span><span class="kpi-icon"><svg th:replace="~{fragments/icons :: icon('money')}"></svg></span></div>
+            <strong class="kpi-value" th:text="|R$ ${#numbers.formatDecimal(report.currentRevenue, 1, 'POINT', 2, 'COMMA')}|">R$ 12.480,00</strong>
+            <span class="kpi-foot" th:text="|${report.revenueChange}% em relação ao mês anterior|">8,5% no período</span>
+        </article>
+        <article class="kpi-card">
+            <div class="kpi-top"><span class="kpi-label">Mês anterior</span><span class="kpi-icon"><svg th:replace="~{fragments/icons :: icon('calendar')}"></svg></span></div>
+            <strong class="kpi-value" th:text="|R$ ${#numbers.formatDecimal(report.previousRevenue, 1, 'POINT', 2, 'COMMA')}|">R$ 11.590,00</strong>
+            <span class="kpi-foot">Receita consolidada no último mês</span>
+        </article>
+        <article class="kpi-card">
+            <div class="kpi-top"><span class="kpi-label">Carteira a receber</span><span class="kpi-icon"><svg th:replace="~{fragments/icons :: icon('clock')}"></svg></span></div>
+            <strong class="kpi-value" th:text="|R$ ${#numbers.formatDecimal(report.receivable, 1, 'POINT', 2, 'COMMA')}|">R$ 3.220,00</strong>
+            <span class="kpi-foot">Pendentes e atrasados somados</span>
+        </article>
+        <article class="kpi-card">
+            <div class="kpi-top"><span class="kpi-label">Ticket médio</span><span class="kpi-icon"><svg th:replace="~{fragments/icons :: icon('reports')}"></svg></span></div>
+            <strong class="kpi-value" th:text="|R$ ${#numbers.formatDecimal(report.averageTicket, 1, 'POINT', 2, 'COMMA')}|">R$ 149,90</strong>
+            <span class="kpi-foot">Média por pagamento confirmado</span>
+        </article>
+    </section>
+
+    <section class="dashboard-grid">
+        <article class="card">
+            <header class="card-header"><div><h2>Evolução da receita</h2><p>Últimos seis meses</p></div></header>
+            <div class="chart-area">
+                <div class="chart-column" th:each="point : ${report.revenueSeries}">
+                    <div class="chart-bar-wrap"><div class="chart-bar" th:style="${'height:' + point.percentage + '%'}" th:attr="data-value=|R$ ${#numbers.formatDecimal(point.value, 1, 'POINT', 2, 'COMMA')}|"></div></div>
+                    <span class="chart-label" th:text="${point.label}">ago</span>
+                </div>
+            </div>
+        </article>
+        <article class="card">
+            <header class="card-header"><div><h2>Saúde da carteira</h2><p>Distribuição por situação</p></div></header>
+            <div class="info-list" style="padding-top:12px">
+                <div class="info-row"><span>Pagamentos confirmados</span><strong style="color:var(--green)" th:text="${report.paidCount}">26</strong></div>
+                <div class="info-row"><span>Cobranças pendentes</span><strong style="color:var(--warning)" th:text="${report.pendingCount}">3</strong></div>
+                <div class="info-row"><span>Cobranças em atraso</span><strong style="color:var(--danger)" th:text="${report.overdueCount}">2</strong></div>
+            </div>
+            <div style="padding:0 20px 20px"><a th:href="@{/payments}" class="button button-secondary button-block">Gerenciar cobranças</a></div>
+        </article>
+    </section>
+</main>
+</html>
